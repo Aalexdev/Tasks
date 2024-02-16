@@ -7,16 +7,19 @@
 
 namespace Tasks{
 	class Task{
+		friend class TaskRef;
 		public:
-			Task();
-			Task(const TaskID& id);
-			Task(const Task& other);
+			Task(TaskRegistry& registry);
+			Task(const TaskID& id, TaskRegistry& registry);
+			Task(const Task& other, TaskRegistry& registry);
 			~Task();
+			
+			const TaskID& id() const noexcept;
+			const Priority& priority() const noexcept;
 
-			const TaskID& id() const;
-			const Priority& priority() const;
 
 		private:
+			TaskRegistry* _registry;
 			TaskID _id;
 	};
 }
