@@ -12,7 +12,7 @@ namespace std{
 namespace Tasks{
 	class TaskRef{
 		public:
-			TaskRef(const TaskID& id, TaskRegistry& registry);
+			TaskRef(const TaskID& id, Context& context);
 			TaskRef(const TaskRef& other);
 			TaskRef(const Task& base);
 			~TaskRef() noexcept;
@@ -20,7 +20,10 @@ namespace Tasks{
 			TaskRef& operator=(const TaskRef& other);
 
 			const Priority& priority() const noexcept;
+			Priority& priority() noexcept;
+			
 			const TaskID& id() const noexcept;
+			TaskID& id() noexcept;
 			
 			bool operator>(const TaskRef& other) const noexcept;
 			bool operator<(const TaskRef& other) const noexcept;
@@ -35,7 +38,7 @@ namespace Tasks{
 			friend void ::std::swap(Tasks::TaskRef& first, Tasks::TaskRef& second);
 
 		private:
-			TaskRegistry* _registry;
+			Context* _context;
 			TaskID _id;
 			Priority _priority;
 	};

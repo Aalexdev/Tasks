@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.28.1)
 project(Tasks VERSION 0.1.0)
 
+# Set C++ standard and build type
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 option(TASKS_SHARED_LIBRARY "Build the shared library" ON)
 option(TASKS_STATIC_LIBRARY "Build the static library" ON)
 option(TASKS_TESTS "Build the tests executable" OFF)

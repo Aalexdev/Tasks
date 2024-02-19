@@ -19,7 +19,7 @@ namespace Tasks{
 		_function = function;
 	}
 
-	void Operation::execute(){
+	void Operation::execute() const{
 		if (isSet()) _function();
 	}
 
@@ -32,10 +32,15 @@ namespace Tasks{
 	}
 	
 	bool Operation::operator==(const FunctionPointer& other) const{
-		return _function == other;
+		return _function.target_type() == other.target_type();
 	}
 
 	bool Operation::operator==(const Operation& other) const{
-		return _function == other._function;
+		return _function.target_type() == other._function.target_type();
+	}
+
+	Operation& Operation::operator=(const Operation& other){
+		_function = other._function;
+		return *this;
 	}
 }

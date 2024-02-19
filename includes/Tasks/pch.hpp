@@ -8,5 +8,12 @@
 #include <thread>
 #include <vector>
 #include <queue>
+#include <chrono>
+#include <list>
+#include <mutex>
+#include <shared_mutex>
+#include <thread>
+#include <condition_variable>
+#include <functional>
 
 #endif

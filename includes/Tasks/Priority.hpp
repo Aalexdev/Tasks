@@ -6,9 +6,9 @@
 namespace Tasks{
 	class Priority{
 		public:
-			static constexpr float LOW = .1f;
-			static constexpr float MEDIUM = .5f;
-			static constexpr float HIGH = .7f;
+			static constexpr float LOW = 0.1f;
+			static constexpr float MEDIUM = 0.5f;
+			static constexpr float HIGH = 0.7f;
 			static constexpr float URGENT = 1.f;
 
 			Priority(float priority = MEDIUM) noexcept;

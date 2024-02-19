@@ -151,3 +151,72 @@ To unsure that everything works well, the synchronization handler is critical, i
 
 
 
+## Synchronization
+
+Here is the base architecture
+
+```mermaid
+sequenceDiagram
+    box Task threads
+    	participant n
+    	participant n+1
+    	participant n+2
+    	participant n+3
+    	participant n+...
+    end
+    
+    participant scheduler
+    participant queue
+    participant registry
+```
+
+
+
+### Initialization
+
+```mermaid
+sequenceDiagram
+    box Task threads
+    	participant thread0
+    	participant thread1
+    	participant thread2
+    	participant thread3
+    end
+    
+    box Library
+        participant Pool
+        participant Scheduler
+        participant Queue
+        participant Registry
+        participant API
+    end
+    
+    participant User
+    
+    User->>API: Intialize request
+    
+    API-)+Registry: Creates
+    API-)+Queue: Creates
+    API-)+Scheduler: Creates
+    API-)+Pool: Creates
+    
+    par Init
+    	Note over Pool: Creates the threads
+    	
+    	Pool-)thread3: 
+    	Pool-)thread2: 
+    	Pool-)thread1: 
+    	Pool-)thread0: 
+    end
+    
+    Note over thread3,thread0: wait for start
+    
+    Registry--)-API: Finished !
+    Queue--)-API: Finished !
+    Scheduler--)-API: Finished !
+    Pool--)-API: Finished !
+    
+    API--)User: All done !
+    
+```
+

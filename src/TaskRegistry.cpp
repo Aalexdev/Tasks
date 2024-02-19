@@ -4,10 +4,10 @@
 #include <stdexcept>
 #include <algorithm>
 
-#define assertTaskID(id) assert(_ids.size() < id); 
+#define assertTaskID(id) assert(_ids.size() > id); 
 
 namespace Tasks{
-	TaskRegistry::TaskRegistry(){}
+	TaskRegistry::TaskRegistry(Context& context) : _context{context}{}
 	TaskRegistry::~TaskRegistry(){}
 
 	TaskID TaskRegistry::createTask(TaskName name){

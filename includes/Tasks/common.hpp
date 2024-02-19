@@ -4,6 +4,7 @@
 #include "pch.hpp"
 
 namespace Tasks{
+	struct Context;
 	class Manager;
 	class Operation;
 	class Priority;
@@ -12,6 +13,9 @@ namespace Tasks{
 	class TaskQueue;
 	class TaskRef;
 	class TaskRegistry;
+	class Importance;
+	class TaskCycle;
+	class SyncManager;
 }
 
 #endif

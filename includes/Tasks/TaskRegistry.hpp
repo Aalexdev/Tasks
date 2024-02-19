@@ -7,7 +7,7 @@
 namespace Tasks{
 	class TaskRegistry{
 		public:
-			TaskRegistry();
+			TaskRegistry(Context& context);
 			~TaskRegistry();
 
 			TaskID createTask(TaskName name = "");
@@ -23,6 +23,7 @@ namespace Tasks{
 			const TaskID& get(const TaskName& name) const;
 
 		private:
+			Context& _context;
 			std::queue<TaskID> _ids;
 			std::vector<TaskData> _data;
 			std::unordered_map<TaskName, TaskID> _nameToID;

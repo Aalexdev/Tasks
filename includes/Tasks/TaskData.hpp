@@ -6,6 +6,9 @@
 #include "Priority.hpp"
 #include "TaskID.hpp"
 #include "TaskName.hpp"
+#include "Importance.hpp"
+#include "TimeConstraint.hpp"
+#include "TaskCycle.hpp"
 
 namespace Tasks{
 	struct TaskData{
@@ -14,6 +17,12 @@ namespace Tasks{
 
 		Operation operation;
 		Priority basePriority;
+		Importance importance;
+		TimeConstraint timeConstraint;
+		TaskCycle cycle;
+
+		std::chrono::steady_clock::time_point lastExecution;
+		std::chrono::steady_clock::duration lastDuration;
 	};
 }
 

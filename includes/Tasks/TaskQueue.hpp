@@ -7,20 +7,25 @@
 
 namespace Tasks{
 	class TaskQueue{
+		friend class PriorityUpdater;
 		public:
-			TaskQueue(TaskRegistry& registry);
+			TaskQueue(Context& context);
 			~TaskQueue();
 
 			void push(const Task& task);
 			void pop(std::size_t id = 0);
 
 			bool empty() const noexcept;
+			
+			void update(const Task& task, const Priority& priority);
+			void update(const std::size_t& id, const Priority& priority);
 
 			Task top() const;
 			Task get(std::size_t id) const;
+			const TaskRef& ref(const std::size_t& id) const;
 
 		private:
-			TaskRegistry& _registry;
+			Context& _context;
 			std::unordered_map<TaskID, std::size_t> _taskIDToIndex;
 			std::vector<TaskRef> _tasks;
 

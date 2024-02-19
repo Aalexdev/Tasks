@@ -6,19 +6,21 @@
 namespace Tasks{
 	class Operation{
 		public:
-			using FunctionPointer = void(*)(void);
+			using FunctionPointer = std::function<void(void)>;
 			
 			Operation();
 			Operation(const Operation& other);
-			Operation(const FunctionPointer& operation);
+			Operation(const FunctionPointer& fnc);
 			~Operation();
+
+			Operation& operator=(const Operation& other);
 
 			const FunctionPointer& get() const;
 			FunctionPointer& get();
 
 			void set(const FunctionPointer& function);
 			
-			void execute();
+			void execute() const;
 
 			bool isSet() const;
 			operator bool() const;
@@ -31,5 +33,7 @@ namespace Tasks{
 			
 	};
 }
+
+
 
 #endif
