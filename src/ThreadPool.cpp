@@ -21,7 +21,7 @@ namespace Tasks{
 	void ThreadPool::stop(){
 		auto lock = _context.syncManager.threadPoolWrite();
 		_stop = true;
-		_context.syncManager.queueUpdated().notify_all();
+		_context.syncManager.waitingTaskCV().notify_all();
 	}
 
 	void ThreadPool::waitIdle(){
@@ -33,8 +33,9 @@ namespace Tasks{
 
 	TaskID ThreadPool::nextTask(){
 		auto& queue = _context.queue;
+
 		std::unique_lock<std::mutex> lock(_context.syncManager.queueAccess());
-		_context.syncManager.queueUpdated().wait(
+		_context.syncManager.waitingTaskCV().wait(
 			lock, 
 			[&]{
 				return !queue.empty() || _stop;
@@ -46,14 +47,31 @@ namespace Tasks{
 		Task task = queue.top();
 		
 		// check dependencies
+		if (checkConcurrencies(task.concurencies())){
+			
+		}
 
 		queue.pop();
 
 		if (!queue.empty()){
-			_context.syncManager.queueUpdated().notify_one();
+			_context.syncManager.waitingTaskCV().notify_one();
 		}
 
 		return task.id();
+	}
+
+	bool ThreadPool::checkConcurrencies(const std::list<Concurrency>& concurrencies){
+		for (const auto& concurrency : concurrencies){
+			for (const auto& c : _currentTasks){
+				if (c.second == concurrency.id()) return true;
+			}
+		}
+		return false;
+	}
+
+	void ThreadPool::updateCurrentTask(TaskID id){
+		auto lock = _context.syncManager.threadPoolWrite();
+		_currentTasks[std::this_thread::get_id()] = id;
 	}
 
 	void ThreadPool::threadFnc(ThreadPool& pool){
@@ -62,8 +80,9 @@ namespace Tasks{
 			if (task == INVALID_TASK_ID) continue;
 
 			auto executionStart = std::chrono::steady_clock::now();
-
 			const auto& operation = pool._context.registry.data(task).operation;
+
+			pool.updateCurrentTask(task);
 
 			try{
 				operation.execute();

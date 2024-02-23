@@ -8,6 +8,7 @@
 #include "Operation.hpp"
 #include "Importance.hpp"
 #include "TaskCycle.hpp"
+#include "Concurrency.hpp"
 
 namespace Tasks{
 	class Task{
@@ -42,6 +43,8 @@ namespace Tasks{
 			void setCycle(const TaskCycle::Frequency& frequency);
 
 			bool isCycle() const noexcept;
+
+			const std::list<Concurrency>& concurencies() const noexcept;
 
 		private:
 			Context* _context;

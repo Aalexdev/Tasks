@@ -23,7 +23,7 @@ namespace Tasks{
 			std::lock_guard<std::mutex> queueLock();
 			std::lock_guard<std::mutex> schedulerLock();
 
-			std::condition_variable& queueUpdated();
+			std::condition_variable& waitingTaskCV();
 
 		private:
 			Context& _context;
@@ -31,7 +31,7 @@ namespace Tasks{
 			std::shared_mutex _threadPoolAccess;
 			std::mutex _queueAccess;
 			std::mutex _schedulerAccess;
-			std::condition_variable _queueUpdated;
+			std::condition_variable _waitingTaskCV;
 	};
 }
 

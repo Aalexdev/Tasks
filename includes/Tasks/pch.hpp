@@ -15,5 +15,6 @@
 #include <thread>
 #include <condition_variable>
 #include <functional>
+#include <atomic>
 
 #endif

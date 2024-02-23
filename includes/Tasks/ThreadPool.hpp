@@ -18,15 +18,17 @@ namespace Tasks{
 		private:
 			Context& _context;
 			std::list<std::thread> _threads;
-			std::vector<TaskID> _currentTasks;
+			std::unordered_map<std::thread::id, TaskID> _currentTasks;
 			std::mutex _taskMutex;
-			bool _stop;
+			std::atomic<bool> _stop;
 
 			static void threadFnc(ThreadPool& pool);
 
 			bool shouldContinue();
 			TaskID nextTask();
+			void updateCurrentTask(TaskID id);
 			void updateTaskData(const TaskID& id, const std::chrono::steady_clock::duration& executionDuration, const std::chrono::steady_clock::time_point& lastExecution);
+			bool checkConcurrencies(const std::list<Concurrency>& concurrencies);
 
 
 	};

@@ -29,7 +29,6 @@ namespace Tasks{
 			}
 
 			const Priority newPriority = ref.priority() * factor;
-			// std::cout << newPriority.get() << std::endl;
 
 			queue.update(queueID, newPriority);
 		}

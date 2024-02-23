@@ -44,7 +44,7 @@ namespace Tasks{
 		return std::lock_guard<std::mutex>(_queueAccess);
 	}
 
-	std::condition_variable& SyncManager::queueUpdated(){
-		return _queueUpdated;
+	std::condition_variable& SyncManager::waitingTaskCV(){
+		return _waitingTaskCV;
 	}
 }

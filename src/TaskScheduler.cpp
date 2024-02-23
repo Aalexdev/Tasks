@@ -54,7 +54,7 @@ namespace Tasks{
 		_context.priorityUpdater.update();
 		_context.registry.data(id).lastExecution = std::chrono::steady_clock::now();
 
-		_context.syncManager.queueUpdated().notify_one();
+		_context.syncManager.waitingTaskCV().notify_one();
 	}
 
 	void TaskScheduler::threadFnc(TaskScheduler& scheduler){

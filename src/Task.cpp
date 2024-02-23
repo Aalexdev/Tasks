@@ -105,4 +105,8 @@ namespace Tasks{
 	void Task::setTimeConstraint(const TimeConstraint::Duration& duration) noexcept{
 		setTimeConstraint(TimeConstraint(duration));
 	}
+
+	const std::list<Concurrency> Task::concurencies() const noexcept{
+		getData().concurrencies;
+	}
 }

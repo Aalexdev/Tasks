@@ -9,7 +9,7 @@
 #include "Importance.hpp"
 #include "TimeConstraint.hpp"
 #include "TaskCycle.hpp"
-#include "Dependency.hpp"
+#include "Concurrency.hpp"
 
 namespace Tasks{
 	struct TaskData{
@@ -21,6 +21,7 @@ namespace Tasks{
 		Importance importance;
 		TimeConstraint timeConstraint;
 		TaskCycle cycle;
+		std::list<Concurrency> concurrencies;
 
 		std::chrono::steady_clock::time_point lastExecution;
 		std::chrono::steady_clock::duration lastDuration;
