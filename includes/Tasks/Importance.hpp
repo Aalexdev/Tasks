@@ -24,6 +24,8 @@ namespace Tasks{
 			bool operator<(const Importance& other) const noexcept;
 			bool operator<=(const Importance& other) const noexcept;
 
+			const float get() const noexcept;
+
 		private:
 			float _importance;
 
