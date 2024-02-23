@@ -22,4 +22,8 @@ namespace Tasks{
 	TimeConstraint::Duration& TimeConstraint::get() noexcept{
 		return _duration;
 	}
+	
+	bool TimeConstraint::hasConstraints() const noexcept{
+		return _duration != NONE;
+	}
 }

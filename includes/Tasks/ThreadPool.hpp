@@ -18,6 +18,7 @@ namespace Tasks{
 		private:
 			Context& _context;
 			std::list<std::thread> _threads;
+			std::vector<TaskID> _currentTasks;
 			std::mutex _taskMutex;
 			bool _stop;
 

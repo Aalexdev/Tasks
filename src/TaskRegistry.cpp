@@ -4,7 +4,8 @@
 #include <stdexcept>
 #include <algorithm>
 
-#define assertTaskID(id) assert(_ids.size() > id); 
+// #define assertTaskID(id) assert(_ids.size() > id); 
+#define assertTaskID(id) if(!(_data.size() > id)) throw std::runtime_error("assertion failed");
 
 namespace Tasks{
 	TaskRegistry::TaskRegistry(Context& context) : _context{context}{}

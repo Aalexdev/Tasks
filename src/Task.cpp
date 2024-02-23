@@ -25,7 +25,7 @@ namespace Tasks{
 		return getData().basePriority;
 	}
 
-	void Task::cyclic(const TaskCycle& cycle){
+	void Task::setCycle(const TaskCycle& cycle){
 		auto lock = _context->syncManager.registryWrite();
 
 		auto& data = getData();
@@ -38,9 +38,36 @@ namespace Tasks{
 		}
 	}
 
+	void Task::setCycle(const TaskCycle::Period& period){
+		setCycle(TaskCycle(period));
+	}
+
+	void Task::setCycle(const TaskCycle::Frequency& frequency){
+		setCycle(TaskCycle(frequency));
+	}
+
 	const Operation& Task::operation() const noexcept{
 		auto lock = _context->syncManager.registryRead();
 		return getData().operation;
+	}
+
+	const Importance& Task::importance() const noexcept{
+		auto lock = _context->syncManager.registryRead();
+		return getData().importance;
+	}
+
+	const TimeConstraint& Task::timeConstraint() const noexcept{
+		auto lock = _context->syncManager.registryRead();
+		return getData().timeConstraint;
+	}
+	
+	const TaskCycle& Task::cycle() const noexcept{
+		auto lock = _context->syncManager.registryRead();
+		return getData().cycle;
+	}
+
+	bool Task::isCycle() const noexcept{
+		return cycle().isCyclic();	
 	}
 
 	void Task::setOperation(const Operation& operation) noexcept{
@@ -50,5 +77,32 @@ namespace Tasks{
 
 	void Task::setOperation(const Operation::FunctionPointer& fnc) noexcept{
 		setOperation(Operation(fnc));
+	}
+
+	void Task::setPriority(const Priority& priority) noexcept{
+		auto lock = _context->syncManager.registryWrite();
+		getData().basePriority = priority;
+	}
+
+	void Task::setPriority(const float& priority) noexcept{
+		setPriority(Priority(priority));
+	}
+	
+	void Task::setImportance(const Importance& importance) noexcept{
+		auto lock = _context->syncManager.registryWrite();
+		getData().importance = importance;
+	}
+
+	void Task::setImportance(const float& importance) noexcept{
+		setImportance(Importance(importance));
+	}
+
+	void Task::setTimeConstraint(const TimeConstraint& constraint) noexcept{
+		auto lock = _context->syncManager.registryWrite();
+		getData().timeConstraint = constraint;
+	}
+
+	void Task::setTimeConstraint(const TimeConstraint::Duration& duration) noexcept{
+		setTimeConstraint(TimeConstraint(duration));
 	}
 }

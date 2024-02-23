@@ -6,6 +6,8 @@
 #include "Priority.hpp"
 #include "TimeConstraint.hpp"
 #include "Operation.hpp"
+#include "Importance.hpp"
+#include "TaskCycle.hpp"
 
 namespace Tasks{
 	class Task{
@@ -19,11 +21,27 @@ namespace Tasks{
 			const TaskID& id() const noexcept;
 			const Priority& priority() const noexcept;
 			const Operation& operation() const noexcept;
+			const Importance& importance() const noexcept;
+			const TimeConstraint& timeConstraint() const noexcept;
+			const TaskCycle& cycle() const noexcept;
 
 			void setOperation(const Operation& operation) noexcept;
 			void setOperation(const Operation::FunctionPointer& fnc) noexcept;
 
-			void cyclic(const TaskCycle& cycle);
+			void setPriority(const Priority& priority) noexcept;
+			void setPriority(const float& priority = Priority::MEDIUM) noexcept;
+
+			void setImportance(const Importance& importance) noexcept;
+			void setImportance(const float& importance = Importance::MODERATE) noexcept;
+
+			void setTimeConstraint(const TimeConstraint& constraint) noexcept;
+			void setTimeConstraint(const TimeConstraint::Duration& duration = TimeConstraint::NONE) noexcept;
+
+			void setCycle(const TaskCycle& cycle);
+			void setCycle(const TaskCycle::Period& period);
+			void setCycle(const TaskCycle::Frequency& frequency);
+
+			bool isCycle() const noexcept;
 
 		private:
 			Context* _context;

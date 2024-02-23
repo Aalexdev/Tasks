@@ -19,6 +19,8 @@ namespace Tasks{
 			const Duration& get() const noexcept;
 			Duration& get() noexcept;
 
+			bool hasConstraints() const noexcept;
+
 		private:
 			Duration _duration;
 			

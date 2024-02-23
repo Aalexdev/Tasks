@@ -9,6 +9,7 @@
 #include "Importance.hpp"
 #include "TimeConstraint.hpp"
 #include "TaskCycle.hpp"
+#include "Dependency.hpp"
 
 namespace Tasks{
 	struct TaskData{

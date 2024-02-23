@@ -5,7 +5,6 @@ namespace Tasks{
 	Dependency::Dependency(const Dependency& other) noexcept : _id{other._id}{}
 	Dependency::~Dependency() noexcept{}
 
-
 	Dependency& Dependency::operator=(const Dependency& other) noexcept{
 		_id = other._id;
 		return *this;
