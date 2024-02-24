@@ -9,7 +9,7 @@ namespace Tasks{
 	}
 
 	void ThreadPool::start(){
-		auto lock = _context.syncManager.threadPoolWrite();
+		std::unique_lock lock(_mutex);
 		_stop = false;
 
 		static const std::size_t threadCount = std::thread::hardware_concurrency() - 1;
@@ -19,9 +19,8 @@ namespace Tasks{
 	}
 
 	void ThreadPool::stop(){
-		auto lock = _context.syncManager.threadPoolWrite();
 		_stop = true;
-		_context.syncManager.waitingTaskCV().notify_all();
+		_CV.notify_all();
 	}
 
 	void ThreadPool::waitIdle(){
@@ -34,8 +33,8 @@ namespace Tasks{
 	TaskID ThreadPool::nextTask(){
 		auto& queue = _context.queue;
 
-		std::unique_lock<std::mutex> lock(_context.syncManager.queueAccess());
-		_context.syncManager.waitingTaskCV().wait(
+		std::unique_lock lock(_mutex);
+		_CV.wait(
 			lock, 
 			[&]{
 				return !queue.empty() || _stop;
@@ -45,32 +44,18 @@ namespace Tasks{
 		if (_stop) return INVALID_TASK_ID;
 
 		Task task = queue.top();
-		
-		// check dependencies
-		if (checkConcurrencies(task.concurencies())){
-			
-		}
 
 		queue.pop();
 
 		if (!queue.empty()){
-			_context.syncManager.waitingTaskCV().notify_one();
+			_CV.notify_one();
 		}
 
 		return task.id();
 	}
 
-	bool ThreadPool::checkConcurrencies(const std::list<Concurrency>& concurrencies){
-		for (const auto& concurrency : concurrencies){
-			for (const auto& c : _currentTasks){
-				if (c.second == concurrency.id()) return true;
-			}
-		}
-		return false;
-	}
-
 	void ThreadPool::updateCurrentTask(TaskID id){
-		auto lock = _context.syncManager.threadPoolWrite();
+		std::unique_lock lock(_mutex);
 		_currentTasks[std::this_thread::get_id()] = id;
 	}
 
@@ -96,14 +81,18 @@ namespace Tasks{
 	}
 
 	bool ThreadPool::shouldContinue(){
-		auto lock = _context.syncManager.threadPoolRead();
 		return !_stop;
 	}
 
 	void ThreadPool::updateTaskData(const TaskID& id, const std::chrono::steady_clock::duration& executionDuration, const std::chrono::steady_clock::time_point& lastExecution){
-		auto lock = _context.syncManager.registryWrite();
+		std::unique_lock lock(_context.registry.mutex());
 		auto& data = _context.registry.data(id);
+
 		data.lastExecution = lastExecution;
 		data.lastDuration = executionDuration;
+	}
+
+	void ThreadPool::trigger(){
+		_CV.notify_one();
 	}
 }

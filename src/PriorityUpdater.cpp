@@ -12,25 +12,40 @@ namespace Tasks{
 
 		for (const auto& it : queue._taskIDToIndex){
 			const std::size_t& queueID = it.second;
-			const Tasks::TaskRef& ref = queue.ref(queueID);
-			const Tasks::TaskData& data = _context.registry.data(ref.id());
+			const TaskRef& ref = queue.cdata(queueID);
+
+			Priority basePriority;
+			Importance importance;
+			TimeConstraint::Duration lastDuration;
+			TimeConstraint timeConstraint;
+
+			{
+				auto& registry = _context.registry;
+
+				std::shared_lock lock(registry.mutex());
+				const TaskData& data = registry.cdata(ref.id());
+
+				basePriority = data.basePriority;
+				importance = data.importance;
+				lastDuration = data.lastDuration;
+				timeConstraint = data.timeConstraint;
+			}
 
 			float factor = 1.f;
 
-			factor += data.basePriority.get();
-			factor += data.importance.get();
+			factor += basePriority.get();
+			factor += importance.get();
 
-			if (data.timeConstraint.hasConstraints()){
-				const auto& wantedDuration = data.timeConstraint.get();
-				const auto& realDurarion = data.lastDuration;
+			if (timeConstraint.hasConstraints()){
+				const auto& wantedDuration = timeConstraint.get();
+				const auto& realDurarion = lastDuration;
 
 				const float effectiveness = wantedDuration / realDurarion;
 				factor *= effectiveness;
 			}
 
 			const Priority newPriority = ref.priority() * factor;
-
-			queue.update(queueID, newPriority);
+			queue.updateID(queueID, newPriority);
 		}
 	}
 }

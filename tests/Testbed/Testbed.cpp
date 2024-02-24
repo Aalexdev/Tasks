@@ -9,12 +9,13 @@ void testbed(){
 	
 	std::cout << "Crating a task ..." << std::endl;
 	
-	Tasks::Task task = manager.create("MyTask");
+	Tasks::Task task = manager.create();
 	task.setOperation(
 		[](void) -> void {
+			std::cout << "hello" << std::endl;
 		}
 	);
-	task.setCycle(10);
+	task.setCycle(5);
 
 	manager.start();
 	std::this_thread::sleep_for(3s);
@@ -25,7 +26,7 @@ int main(int argc, char** argv){
 
 	std::cout << "Running Testbed ..." << std::endl;
 	testbed();
-	std::cout << "Testbed terminated." << std::endl;
+	std::cout << "Testbed finished." << std::endl;
 
 	return 0;
 }

@@ -14,29 +14,25 @@ namespace Tasks{
 	}
 
 	void TaskScheduler::stop(){
-		{ 
-			auto schedulerLock = _context.syncManager.schedulerLock();
-			_stop = true;
-		}
+		_stop = true;
 		if (_thread.joinable()) _thread.join();
 	}
 
 	bool TaskScheduler::shouldContinue(){
-		auto schedulerLock = _context.syncManager.schedulerLock();
 		return !_stop;
 	}
 
 	std::pair<TaskID, std::chrono::steady_clock::time_point> TaskScheduler::nextTask(){
-		auto schedulerLock = _context.syncManager.schedulerLock();
-		auto registryLock = _context.syncManager.registryRead();
+		std::unique_lock registryLock(_context.registry.mutex());
+		std::unique_lock schedulerLock(_mutex);
 
 		TaskID minId = INVALID_TASK_ID;
-		std::chrono::steady_clock::duration minDuration = std::chrono::hours(100'000);
+		std::chrono::nanoseconds minDuration = std::chrono::hours(100'000);
 		const auto now = std::chrono::steady_clock::now();
 
 		for (const auto& id : _cyclicTasks){
 			const auto& data = _context.registry.data(id);
-			std::chrono::steady_clock::duration duration = data.lastExecution - now + data.cycle.period();
+			std::chrono::nanoseconds duration = data.lastExecution - now + data.cycle.period();
 			if (duration < minDuration){
 				minDuration = duration;
 				minId = id;
@@ -47,32 +43,28 @@ namespace Tasks{
 	}
 
 	void TaskScheduler::requestExecution(const TaskID& id){
-		auto schedulerLock = _context.syncManager.schedulerLock();
-		auto queueLock = _context.syncManager.queueLock();
-
 		_context.queue.push(Task(id, _context));
 		_context.priorityUpdater.update();
-		_context.registry.data(id).lastExecution = std::chrono::steady_clock::now();
+		_context.registry.write(id, offsetof(TaskData, lastExecution), std::chrono::steady_clock::now());
 
-		_context.syncManager.waitingTaskCV().notify_one();
+		_context.threadPool.trigger();
 	}
 
 	void TaskScheduler::threadFnc(TaskScheduler& scheduler){
 		while (scheduler.shouldContinue()){
-			auto [id, timePoint] = scheduler.nextTask();
-
+			const auto [id, timePoint] = scheduler.nextTask();
 			std::this_thread::sleep_until(timePoint);
 			scheduler.requestExecution(id);
 		}
 	}
 	
 	void TaskScheduler::push(const TaskID& id){
-		auto lock = _context.syncManager.schedulerLock();
+		std::unique_lock lock(_mutex);
 		_cyclicTasks.push_back(id);
 	}
 
 	void TaskScheduler::pop(const TaskID& id){
-		auto lock = _context.syncManager.schedulerLock();
+		std::unique_lock lock(_mutex);
 		_cyclicTasks.remove(id);
 	}
 }

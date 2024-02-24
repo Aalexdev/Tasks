@@ -3,6 +3,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <algorithm>
+#include <cstring>
 
 #define assertTaskID(id) assert(_data.size() > id);
 
@@ -20,7 +21,7 @@ namespace Tasks{
 		return reinterpret_cast<const uint8_t*>(_data.data()) + (id * sizeof(TaskData)) + offset;
 	}
 
-	void TaskRegistry::write(const TaskID& id, const void* src, const std::size_t& memberOffset , const std::size_t& memberSize){
+	void TaskRegistry::write(const TaskID& id, const void* src, const std::size_t& memberOffset, const std::size_t& memberSize){
 		assertTaskID(id);
 		void* dst = get(id, memberOffset);
 		std::memcpy(dst, src, memberSize);
@@ -80,5 +81,13 @@ namespace Tasks{
 		std::unique_lock lock(_mutex);
 		_ids.push(id);
 		_data[id] = TaskData();
+	}
+	
+	const TaskData& TaskRegistry::cdata(const TaskID& id) const{
+		return _data[id];
+	}
+
+	TaskData& TaskRegistry::data(const TaskID& id){
+		return _data[id];
 	}
 }

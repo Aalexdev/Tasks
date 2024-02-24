@@ -2,7 +2,7 @@
 #define __TASKS_TASK_MANAGER_HPP__
 
 #include "common.hpp"
-#include "Context.hpp"
+#include "TasK.hpp"
 
 namespace Tasks{
 	class Manager{
@@ -10,14 +10,14 @@ namespace Tasks{
 			Manager();
 			~Manager();
 
-			Task create(const std::string& name);
+			Task create();
 			void destroy(const Task& task);
 
 			void start();
 			void stop();
 			
 		private:
-			Context _context;
+			Context* _context;
 	};
 }
 

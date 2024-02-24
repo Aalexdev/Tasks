@@ -1,11 +1,15 @@
 #include "Tasks/TaskQueue.hpp"
 #include "Tasks/Context.hpp"
 
+#include <stdexcept>
+
 namespace Tasks{
 	TaskQueue::TaskQueue(Context& context) : _context{context}{}
 	TaskQueue::~TaskQueue(){}
 
 	void TaskQueue::push(const Task& task){
+		std::unique_lock lock(_mutex);
+
 		_tasks.emplace_back(task);
 		std::size_t index = _tasks.size() - 1;
 		_taskIDToIndex[task.id()] = index;
@@ -15,6 +19,7 @@ namespace Tasks{
 	void TaskQueue::pop(std::size_t id){
 		if (empty()) return;
 
+		std::unique_lock lock(_mutex);
 		_taskIDToIndex.erase(_tasks[id].id());
 		_tasks[id] = _tasks.back();
 		_taskIDToIndex[_tasks[id].id()] = id;
@@ -27,10 +32,15 @@ namespace Tasks{
 	}
 
 	Task TaskQueue::get(std::size_t id) const{
+		std::shared_lock lock(_mutex);
 		return Task(_tasks[id].id(), _context);
 	}
 
-	const TaskRef& TaskQueue::ref(const std::size_t& id) const{
+	const TaskRef& TaskQueue::cdata(const std::size_t& id) const{
+		return _tasks[id];
+	}
+
+	TaskRef& TaskQueue::data(const std::size_t& id){
 		return _tasks[id];
 	}
 	
@@ -77,21 +87,37 @@ namespace Tasks{
 	}
 
 	bool TaskQueue::empty() const noexcept{
+		std::shared_lock lock(_mutex);
 		return _tasks.empty();
 	}
 
 	void TaskQueue::update(const Task& task, const Priority& priority){
-		auto it = _taskIDToIndex.find(task.id());
-		if (it == _taskIDToIndex.end()) return;
-
-		size_t id = it->second;
-		update(id, priority);
+		size_t id = find(task.id());
+		updateID(id, priority);
 	}
 
-	void TaskQueue::update(const std::size_t& id, const Priority& priority){
-		_tasks[id].priority() = priority;
+	void TaskQueue::updateID(const std::size_t& id, const Priority& priority){
+		std::unique_lock lock(_mutex);
 
+		_tasks[id].priority() = priority;
 		percolateUp(id);
 		percolateDown(id);
+	}
+
+	const std::shared_mutex& TaskQueue::mutex() const noexcept{
+		return _mutex;
+	}
+	
+	std::shared_mutex& TaskQueue::mutex() noexcept{
+		return _mutex;
+	}
+
+	std::size_t TaskQueue::find(const TaskID& id) const{
+		std::shared_lock lock(_mutex);
+
+		auto it = _taskIDToIndex.find(id);
+		if (it == _taskIDToIndex.end()) throw std::runtime_error("Cannot find ID");
+
+		return it->second;
 	}
 }

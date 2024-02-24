@@ -1,4 +1,5 @@
 #include "Tasks/Task.hpp"
+#include "Tasks/TaskData.hpp"
 #include "Tasks/Context.hpp"
 #include <iostream>
 
@@ -8,28 +9,32 @@ namespace Tasks{
 	Task::Task(const Task& other) : _id{other._id}, _context{other._context}{}
 	Task::~Task(){}
 
-	const TaskData& Task::getData() const{
-		return _context->registry.data(_id);
-	}
-
-	TaskData& Task::getData(){
-		return _context->registry.data(_id);
-	}
-
 	const TaskID& Task::id() const noexcept{
 		return _id;
 	}
 
-	const Priority& Task::priority() const noexcept{
-		auto lock = _context->syncManager.registryRead();
-		return getData().basePriority;
+	Priority Task::priority() const noexcept{
+		return _context->registry.read<Priority>(_id, offsetof(TaskData, basePriority));
+	}
+
+	Operation Task::operation() const noexcept{
+		return _context->registry.read<Operation>(_id, offsetof(TaskData, operation));
+	}
+
+	Importance Task::importance() const noexcept{
+		return _context->registry.read<Importance>(_id, offsetof(TaskData, importance));
+	}
+
+	TimeConstraint Task::timeConstraint() const noexcept{
+		return _context->registry.read<TimeConstraint>(_id, offsetof(TaskData, timeConstraint));
+	}
+	
+	TaskCycle Task::cycle() const noexcept{
+		return _context->registry.read<TaskCycle>(_id, offsetof(TaskData, cycle));
 	}
 
 	void Task::setCycle(const TaskCycle& cycle){
-		auto lock = _context->syncManager.registryWrite();
-
-		auto& data = getData();
-		data.cycle = cycle;
+		_context->registry.write<TaskCycle>(_id, offsetof(TaskData, cycle), cycle);
 
 		if (cycle.isCyclic()){
 			_context->scheduler.push(_id);
@@ -46,33 +51,12 @@ namespace Tasks{
 		setCycle(TaskCycle(frequency));
 	}
 
-	const Operation& Task::operation() const noexcept{
-		auto lock = _context->syncManager.registryRead();
-		return getData().operation;
-	}
-
-	const Importance& Task::importance() const noexcept{
-		auto lock = _context->syncManager.registryRead();
-		return getData().importance;
-	}
-
-	const TimeConstraint& Task::timeConstraint() const noexcept{
-		auto lock = _context->syncManager.registryRead();
-		return getData().timeConstraint;
-	}
-	
-	const TaskCycle& Task::cycle() const noexcept{
-		auto lock = _context->syncManager.registryRead();
-		return getData().cycle;
-	}
-
 	bool Task::isCycle() const noexcept{
 		return cycle().isCyclic();	
 	}
 
 	void Task::setOperation(const Operation& operation) noexcept{
-		auto lock = _context->syncManager.registryWrite();
-		getData().operation = operation;
+		_context->registry.write<Operation>(_id, offsetof(TaskData, operation), operation);
 	}
 
 	void Task::setOperation(const Operation::FunctionPointer& fnc) noexcept{
@@ -80,8 +64,7 @@ namespace Tasks{
 	}
 
 	void Task::setPriority(const Priority& priority) noexcept{
-		auto lock = _context->syncManager.registryWrite();
-		getData().basePriority = priority;
+		_context->registry.write<Priority>(_id, offsetof(TaskData, basePriority), priority);
 	}
 
 	void Task::setPriority(const float& priority) noexcept{
@@ -89,8 +72,7 @@ namespace Tasks{
 	}
 	
 	void Task::setImportance(const Importance& importance) noexcept{
-		auto lock = _context->syncManager.registryWrite();
-		getData().importance = importance;
+		_context->registry.write<Importance>(_id, offsetof(TaskData, importance), importance);
 	}
 
 	void Task::setImportance(const float& importance) noexcept{
@@ -98,15 +80,10 @@ namespace Tasks{
 	}
 
 	void Task::setTimeConstraint(const TimeConstraint& constraint) noexcept{
-		auto lock = _context->syncManager.registryWrite();
-		getData().timeConstraint = constraint;
+		_context->registry.write<TimeConstraint>(_id, offsetof(TaskData, timeConstraint), constraint);
 	}
 
 	void Task::setTimeConstraint(const TimeConstraint::Duration& duration) noexcept{
 		setTimeConstraint(TimeConstraint(duration));
-	}
-
-	const std::list<Concurrency> Task::concurencies() const noexcept{
-		getData().concurrencies;
 	}
 }

@@ -20,11 +20,11 @@ namespace Tasks{
 			~Task();
 			
 			const TaskID& id() const noexcept;
-			const Priority& priority() const noexcept;
-			const Operation& operation() const noexcept;
-			const Importance& importance() const noexcept;
-			const TimeConstraint& timeConstraint() const noexcept;
-			const TaskCycle& cycle() const noexcept;
+			Priority priority() const noexcept;
+			Operation operation() const noexcept;
+			Importance importance() const noexcept;
+			TimeConstraint timeConstraint() const noexcept;
+			TaskCycle cycle() const noexcept;
 
 			void setOperation(const Operation& operation) noexcept;
 			void setOperation(const Operation::FunctionPointer& fnc) noexcept;
@@ -44,14 +44,9 @@ namespace Tasks{
 
 			bool isCycle() const noexcept;
 
-			const std::list<Concurrency>& concurencies() const noexcept;
-
 		private:
 			Context* _context;
 			TaskID _id;
-
-			const TaskData& getData() const;
-			TaskData& getData();
 	};
 }
 

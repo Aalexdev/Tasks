@@ -5,7 +5,6 @@
 #include "TaskRegistry.hpp"
 #include "TaskQueue.hpp"
 #include "PriorityUpdater.hpp"
-#include "SyncManager.hpp"
 #include "TaskScheduler.hpp"
 #include "ThreadPool.hpp"
 
@@ -14,7 +13,6 @@ namespace Tasks{
 		TaskRegistry registry;
 		TaskQueue queue;
 		PriorityUpdater priorityUpdater;
-		SyncManager syncManager;
 		TaskScheduler scheduler;
 		ThreadPool threadPool;
 

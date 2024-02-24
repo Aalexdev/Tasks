@@ -15,7 +15,6 @@ namespace Tasks{
 	class TaskRegistry;
 	class Importance;
 	class TaskCycle;
-	class SyncManager;
 	class Dependency;
 }
 

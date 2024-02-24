@@ -19,8 +19,9 @@ namespace Tasks{
 		private:
 			Context& _context;
 			std::list<TaskID> _cyclicTasks;
-			bool _stop;
+			std::atomic<bool> _stop;
 			std::thread _thread;
+			std::mutex _mutex;
 
 			static void threadFnc(TaskScheduler& scheduler);
 

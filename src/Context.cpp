@@ -5,7 +5,6 @@ namespace Tasks{
 		registry{*this},
 		queue{*this},
 		priorityUpdater{*this},
-		syncManager{*this},
 		scheduler{*this},
 		threadPool{*this}
 	{}
