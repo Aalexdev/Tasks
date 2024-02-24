@@ -22,4 +22,8 @@ namespace Tasks{
 	TaskID& Concurrency::id() noexcept{
 		return _id;
 	}
+
+	bool Concurrency::operator==(const Concurrency& other) const noexcept{
+		return _id == other._id;
+	}
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28.1)
+cmake_minimum_required(VERSION 3.22.1)
 project(Tasks VERSION 0.1.0)
 
 # Set C++ standard and build type

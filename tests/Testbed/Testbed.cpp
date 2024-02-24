@@ -9,13 +9,25 @@ void testbed(){
 	
 	std::cout << "Crating a task ..." << std::endl;
 	
-	Tasks::Task task = manager.create();
-	task.setOperation(
+	Tasks::Task taskA = manager.create();
+	taskA.setOperation(
 		[](void) -> void {
-			std::cout << "hello" << std::endl;
+			std::cout << "A" << std::endl;
+			std::this_thread::sleep_for(0.5s);
 		}
 	);
-	task.setCycle(5);
+	taskA.setCycle(5);
+
+	Tasks::Task taskB = manager.create();
+	taskB.setOperation(
+		[](void) -> void {
+			std::cout << "B" << std::endl;
+		}
+	);
+	taskB.setCycle(10);
+
+	taskB.pushConcurrency(Tasks::Concurrency(taskA.id()));
+	taskA.pushConcurrency(Tasks::Concurrency(taskB.id()));
 
 	manager.start();
 	std::this_thread::sleep_for(3s);

@@ -120,4 +120,9 @@ namespace Tasks{
 
 		return it->second;
 	}
+
+	std::size_t TaskQueue::size() const noexcept{
+		std::shared_lock lock(_mutex);
+		return _tasks.size();
+	}
 }

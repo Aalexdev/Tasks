@@ -44,6 +44,10 @@ namespace Tasks{
 
 			bool isCycle() const noexcept;
 
+			std::list<Concurrency> concurrencies() const;
+			void pushConcurrency(const Concurrency& concurrent);
+			void popConccurency(const Concurrency& concurrent);
+
 		private:
 			Context* _context;
 			TaskID _id;

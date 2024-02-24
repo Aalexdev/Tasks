@@ -21,7 +21,7 @@ namespace Tasks{
 			Task top() const;
 			Task get(std::size_t id) const;
 			bool empty() const noexcept;
-
+			std::size_t size() const noexcept;
 
 			const TaskRef& cdata(const std::size_t& id) const;
 			TaskRef& data(const std::size_t& id);

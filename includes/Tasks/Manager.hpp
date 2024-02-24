@@ -2,7 +2,7 @@
 #define __TASKS_TASK_MANAGER_HPP__
 
 #include "common.hpp"
-#include "TasK.hpp"
+#include "Task.hpp"
 
 namespace Tasks{
 	class Manager{

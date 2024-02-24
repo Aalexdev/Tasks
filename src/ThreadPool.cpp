@@ -35,7 +35,7 @@ namespace Tasks{
 
 		std::unique_lock lock(_mutex);
 		_CV.wait(
-			lock, 
+			lock,
 			[&]{
 				return !queue.empty() || _stop;
 			}
@@ -43,7 +43,25 @@ namespace Tasks{
 
 		if (_stop) return INVALID_TASK_ID;
 
-		Task task = queue.top();
+		Task task(_context);
+		{
+			std::size_t i=0;
+			std::shared_lock queueLock(queue.mutex());
+			for (; i<queue.size(); i++){
+				Task temp = Task(queue.cdata(i).id(), _context);
+
+				if (checkConcurrencies(temp)) continue;
+
+				task = temp;
+				break;
+			}
+		}
+
+		if (task.id() == INVALID_TASK_ID){
+			lock.unlock();
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+			return INVALID_TASK_ID;
+		}
 
 		queue.pop();
 
@@ -52,6 +70,17 @@ namespace Tasks{
 		}
 
 		return task.id();
+	}
+
+	bool ThreadPool::checkConcurrencies(const Task& task){
+		auto concurrencies = task.concurrencies();
+		for (auto& t : _currentTasks){
+			if (t.second == task.id()) return true;
+			for (auto& c : concurrencies){
+				if (t.second == c.id()) return true;
+			}
+		}
+		return false;
 	}
 
 	void ThreadPool::updateCurrentTask(TaskID id){
@@ -75,6 +104,7 @@ namespace Tasks{
 				std::cerr << e.what() << std::endl;
 			}
 
+			pool.updateCurrentTask(INVALID_TASK_ID);
 			auto executionDuration = std::chrono::steady_clock::now() - executionStart;
 			pool.updateTaskData(task, executionDuration, executionStart);
 		}

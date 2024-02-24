@@ -14,6 +14,8 @@ namespace Tasks{
 			Concurrency& operator=(const Concurrency& other) noexcept;
 			Concurrency& operator=(const TaskID& id) noexcept;
 
+			bool operator==(const Concurrency& other) const noexcept;
+
 			const TaskID& id() const noexcept;
 			TaskID& id() noexcept;
 

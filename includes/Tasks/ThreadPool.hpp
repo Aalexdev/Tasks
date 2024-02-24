@@ -31,6 +31,7 @@ namespace Tasks{
 			TaskID nextTask();
 			void updateCurrentTask(TaskID id);
 			void updateTaskData(const TaskID& id, const std::chrono::steady_clock::duration& executionDuration, const std::chrono::steady_clock::time_point& lastExecution);
+			bool checkConcurrencies(const Task& task);
 
 	};
 }

@@ -86,4 +86,22 @@ namespace Tasks{
 	void Task::setTimeConstraint(const TimeConstraint::Duration& duration) noexcept{
 		setTimeConstraint(TimeConstraint(duration));
 	}
+	
+	std::list<Concurrency> Task::concurrencies() const{
+		auto& registry = _context->registry;
+		std::shared_lock lock(registry.mutex());
+		return registry.data(_id).concurrencies;
+	}
+
+	void Task::pushConcurrency(const Concurrency& concurrent){
+		auto& registry = _context->registry;
+		std::unique_lock lock(registry.mutex());
+		registry.data(_id).concurrencies.push_back(concurrent);
+	}
+
+	void Task::popConccurency(const Concurrency& concurrent){
+		auto& registry = _context->registry;
+		std::unique_lock lock(registry.mutex());
+		registry.data(_id).concurrencies.remove(concurrent);
+	}
 }
