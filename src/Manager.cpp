@@ -28,4 +28,8 @@ namespace Tasks{
 		_context->threadPool.stop();
 		_context->threadPool.waitIdle();
 	}
+
+	void Manager::trigger(const Task& task){
+		_context->queue.push(task);
+	}
 }

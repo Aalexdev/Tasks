@@ -15,6 +15,8 @@ namespace Tasks{
 
 			void start();
 			void stop();
+
+			void trigger(const Task& task);
 			
 		private:
 			Context* _context;
