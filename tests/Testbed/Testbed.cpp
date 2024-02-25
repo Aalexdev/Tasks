@@ -27,15 +27,32 @@ void testbed(){
 		[](void) -> void {
 			taskB_counter++;
 			std::cout << "B" << std::endl;
-			std::this_thread::sleep_for(50ms);
+			std::this_thread::sleep_for(5ms);
 		}
 	);
-	taskB.setCycle(125);
+	taskB.setCycle(60);
 
 	taskB.pushConcurrency(taskA);
 	taskA.pushConcurrency(taskB);
 
+	Tasks::Task singleTask = manager.create();
+	singleTask.setOperation(
+		[](void) -> void {
+			std::this_thread::sleep_for(1s);
+			std::cout << "single task" << std::endl;
+		}
+	);
+
+	singleTask.addCallback(
+		[&manager, &singleTask](void) -> void {
+			manager.destroy(singleTask);
+		}
+	);
+
 	manager.start();
+
+	manager.trigger(singleTask);
+
 	std::this_thread::sleep_for(3s);
 	manager.stop();
 	

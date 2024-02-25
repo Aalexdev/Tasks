@@ -94,7 +94,7 @@ namespace Tasks{
 			if (task == INVALID_TASK_ID) continue;
 
 			auto executionStart = std::chrono::steady_clock::now();
-			const auto& operation = pool._context.registry.data(task).operation;
+			auto operation = pool._context.registry.data(task).operation;
 
 			pool.updateCurrentTask(task);
 
@@ -107,6 +107,8 @@ namespace Tasks{
 			pool.updateCurrentTask(INVALID_TASK_ID);
 			auto executionDuration = std::chrono::steady_clock::now() - executionStart;
 			pool.updateTaskData(task, executionDuration, executionStart);
+
+			pool.executeCallbacks(Task(task, pool._context));
 		}
 	}
 
@@ -124,5 +126,19 @@ namespace Tasks{
 
 	void ThreadPool::trigger(){
 		_CV.notify_one();
+	}
+
+	void ThreadPool::executeCallbacks(const Task& task){
+		std::shared_lock lock(_context.registry.mutex());
+		const auto callbacks = _context.registry.cdata(task.id()).callbacks;
+		lock.unlock();
+
+		for (const auto& c : callbacks){
+			try{
+				c.execute();
+			} catch (const std::exception& e){
+				std::cerr << "Failed to run callback" << std::endl;
+			}
+		}
 	}
 }

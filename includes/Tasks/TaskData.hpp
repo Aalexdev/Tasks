@@ -22,6 +22,7 @@ namespace Tasks{
 		TimeConstraint timeConstraint;
 		TaskCycle cycle;
 		std::list<Concurrency> concurrencies;
+		std::list<Operation> callbacks;
 
 		std::chrono::steady_clock::time_point lastExecution;
 		std::chrono::steady_clock::duration lastDuration;

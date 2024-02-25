@@ -48,6 +48,9 @@ namespace Tasks{
 			void pushConcurrency(const Concurrency& concurrent);
 			void popConccurency(const Concurrency& concurrent);
 
+			void addCallback(const Operation& operation);
+			void addCallback(const Operation::FunctionPointer& operation);
+
 		private:
 			Context* _context;
 			TaskID _id;

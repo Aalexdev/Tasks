@@ -104,4 +104,16 @@ namespace Tasks{
 		std::unique_lock lock(registry.mutex());
 		registry.data(_id).concurrencies.remove(concurrent);
 	}
+	
+	void Task::addCallback(const Operation& operation){
+		auto& registry = _context->registry;
+		std::unique_lock lock(registry.mutex());
+		registry.data(_id).callbacks.push_back(operation);
+	}
+
+	void Task::addCallback(const Operation::FunctionPointer& operation){
+		auto& registry = _context->registry;
+		std::unique_lock lock(registry.mutex());
+		registry.data(_id).callbacks.push_back(operation);
+	}
 }
