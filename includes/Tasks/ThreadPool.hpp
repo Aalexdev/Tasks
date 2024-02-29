@@ -24,6 +24,7 @@ namespace Tasks{
 			std::mutex _mutex;
 			std::atomic<bool> _stop;
 			std::condition_variable _CV;
+			std::condition_variable _taskExecutedCV;
 
 			static void threadFnc(ThreadPool& pool);
 

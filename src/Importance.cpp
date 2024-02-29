@@ -9,6 +9,11 @@ namespace Tasks{
 		_importance = other._importance;
 		return *this;
 	}
+	
+	Importance& Importance::operator=(const float& importance) noexcept{
+		_importance = importance;
+		return *this;
+	}
 
 	bool Importance::operator>(const Importance& other) const noexcept{
 		return _importance > other._importance;
@@ -29,5 +34,12 @@ namespace Tasks{
 	const float Importance::get() const noexcept{
 		return _importance;
 	}
+	
+	bool Importance::operator==(const float& importance) const noexcept{
+		return _importance == importance;
+	}
 
+	bool Importance::operator==(const Importance& other) const noexcept{
+		return _importance == other._importance;
+	}
 }

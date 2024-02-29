@@ -21,6 +21,7 @@ namespace Tasks{
 	void ThreadPool::stop(){
 		_stop = true;
 		_CV.notify_all();
+		_taskExecutedCV.notify_all();
 	}
 
 	void ThreadPool::waitIdle(){
@@ -58,8 +59,7 @@ namespace Tasks{
 		}
 
 		if (task.id() == INVALID_TASK_ID){
-			lock.unlock();
-			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+			_taskExecutedCV.wait(lock);
 			return INVALID_TASK_ID;
 		}
 
@@ -104,10 +104,12 @@ namespace Tasks{
 				std::cerr << e.what() << std::endl;
 			}
 
+
 			pool.updateCurrentTask(INVALID_TASK_ID);
 			auto executionDuration = std::chrono::steady_clock::now() - executionStart;
 			pool.updateTaskData(task, executionDuration, executionStart);
 
+			pool._taskExecutedCV.notify_all();
 			pool.executeCallbacks(Task(task, pool._context));
 		}
 	}

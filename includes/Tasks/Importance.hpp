@@ -13,11 +13,18 @@ namespace Tasks{
 			static constexpr float VERY_HIGH = 0.8f;
 			static constexpr float CRITICAL = 1.f;
 
-			Importance(const float& importance = MODERATE) noexcept;
+			static constexpr float DEFAULT = MODERATE;
+
+			Importance(const float& importance = DEFAULT) noexcept;
 			Importance(const Importance& other) noexcept;
 			~Importance() noexcept;
 
+			Importance& operator=(const float& importance) noexcept;
 			Importance& operator=(const Importance& other) noexcept;
+
+			
+			bool operator==(const float& importance) const noexcept;
+			bool operator==(const Importance& other) const noexcept;
 
 			bool operator>(const Importance& other) const noexcept;
 			bool operator>=(const Importance& other) const noexcept;
